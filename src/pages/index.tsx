@@ -1,4 +1,4 @@
-import { Button, Box } from '@chakra-ui/react';
+import { Button, Box, useColorMode } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
@@ -22,6 +22,7 @@ interface QueryResult {
 }
 
 export default function Home(): JSX.Element {
+  const { colorMode } = useColorMode();
   const {
     data,
     isLoading,
@@ -72,11 +73,18 @@ export default function Home(): JSX.Element {
         <CardList cards={formattedData} />
 
         {hasNextPage &&
-          <Button marginTop="40px" onClick={() => fetchNextPage()}>
-            {isFetchingNextPage
-              ? 'Carregando...'
-              : 'Carregar mais'}
-          </Button>
+          <Box w="100%" h="5rem">
+            <Button
+              marginTop="40px"
+              onClick={() => fetchNextPage()}
+              variant="orange-dark/light"
+            >
+              {isFetchingNextPage
+                ? 'Carregando...'
+                : 'Carregar mais'}
+            </Button>
+          </Box>
+
         }
       </Box>
     </>

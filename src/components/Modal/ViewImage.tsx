@@ -6,6 +6,7 @@ import {
   ModalBody,
   Image,
   Link,
+  useColorMode,
 } from '@chakra-ui/react';
 
 interface ModalViewImageProps {
@@ -19,6 +20,8 @@ export function ModalViewImage({
   onClose,
   imgUrl,
 }: ModalViewImageProps): JSX.Element {
+  const { colorMode } = useColorMode();
+
   return (
     <>
       <Modal
@@ -29,7 +32,8 @@ export function ModalViewImage({
       >
         <ModalOverlay />
         <ModalContent
-          bg="pGray.800"
+          bg={colorMode === "dark" ? "modalViewImage.background-dark" : "modalViewImage.background-light"}
+          color={colorMode === "dark" ? "modalViewImage.color-dark" : "modalViewImage.color-light"}
           borderRadius="0rem 0rem 0.375rem 0.375rem"
           maxWidth="fit-content"
         >

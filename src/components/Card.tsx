@@ -5,6 +5,7 @@ import {
   Image,
   Skeleton,
   SkeletonText,
+  useColorMode,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
@@ -22,9 +23,15 @@ interface CardProps {
 
 export function Card({ data, viewImage }: CardProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
+  const { colorMode } = useColorMode();
 
   return (
-    <Box key={data.ts} borderRadius="md" bgColor="pGray.800">
+    <Box
+      position="relative"
+      key={data.ts}
+      borderRadius="md"
+      bgColor={colorMode === "dark" ? "card.background-dark" : "card.background-light"}
+    >
       <Skeleton isLoaded={!isLoading}>
         <Image
           src={data.url}
@@ -46,12 +53,12 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
             <SkeletonText fontSize="md" mt={7} noOfLines={1} />
           </>
         ) : (
-          <>
+          <Box color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}>
             <Heading fontSize="2xl">{data.title}</Heading>
             <Text mt={2.5} fontSize="md">
               {data.description}
             </Text>
-          </>
+          </Box>
         )}
       </Box>
     </Box>
