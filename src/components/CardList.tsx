@@ -35,7 +35,8 @@ export function CardList({ cards }: CardsProps): JSX.Element {
                 description: card.description,
                 title: card.title,
                 ts: card.ts,
-                url: card.url
+                url: card.url,
+                id: card.id
               }}
               viewImage={() => viewImage(card.url)}
             />

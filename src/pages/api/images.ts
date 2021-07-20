@@ -49,38 +49,81 @@ export default async function handler(
   }
 
   if (req.method === 'GET') {
-    const { after } = req.query;
+    const { after, get } = req.query;
 
-    const queryOptions = {
-      size: 6,
-      ...(after && { after: query.Ref(query.Collection('images'), after) }),
-    };
+    if (get === 'all-images') {
+      return client
+        .query<ImagesQueryResponse>(
+          query.Map(
+            query.Paginate(
+              query.Documents(query.Collection('images')),
+            ),
+            query.Lambda('X', query.Get(query.Var('X')))
+          )
+        )
+        .then(response => {
+          const formattedData = response.data.map(item => ({
+            ...item.data,
+            ts: item.ts,
+            id: item.ref.id,
+          }));
+
+          return res.json({
+            data: formattedData
+          });
+        })
+        .catch(err => {
+          return res.status(400).json(err);
+        });
+    } else {
+      const queryOptions = {
+        size: 6,
+        ...(after && { after: query.Ref(query.Collection('images'), after) }),
+      };
+
+      return client
+        .query<ImagesQueryResponse>(
+          query.Map(
+            query.Paginate(
+              query.Documents(query.Collection('images')),
+              queryOptions
+            ),
+            query.Lambda('X', query.Get(query.Var('X')))
+          )
+        )
+        .then(response => {
+          const formattedData = response.data.map(item => ({
+            ...item.data,
+            ts: item.ts,
+            id: item.ref.id,
+          }));
+
+          return res.json({
+            data: formattedData,
+            after: response.after ? response.after[0].id : null,
+          });
+        })
+        .catch(err => {
+          return res.status(400).json(err);
+        });
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    const { idImage } = req.query;
 
     return client
-      .query<ImagesQueryResponse>(
-        query.Map(
-          query.Paginate(
-            query.Documents(query.Collection('images')),
-            queryOptions
-          ),
-          query.Lambda('X', query.Get(query.Var('X')))
-        )
+      .query(
+        query.Delete(query.Ref(query.Collection('images'), idImage))
       )
-      .then(response => {
-        const formattedData = response.data.map(item => ({
-          ...item.data,
-          ts: item.ts,
-          id: item.ref.id,
-        }));
-
-        return res.json({
-          data: formattedData,
-          after: response.after ? response.after[0].id : null,
-        });
+      .then(() => {
+        return res.status(200).json({ success: true });
       })
-      .catch(err => {
-        return res.status(400).json(err);
-      });
+      .catch(err =>
+        res
+          .status(501)
+          .json({ error: `Sorry something Happened! ${err.message}` })
+      );
   }
 
   return res.status(405).json({ error: `Method '${req.method}' Not Allowed` });

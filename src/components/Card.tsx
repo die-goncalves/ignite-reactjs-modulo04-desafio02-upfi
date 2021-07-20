@@ -8,12 +8,14 @@ import {
   useColorMode,
 } from '@chakra-ui/react';
 import { useState } from 'react';
+import { ModalDeleteImage } from './Modal/DeleteImage';
 
 interface Card {
   title: string;
   description: string;
   url: string;
   ts: number;
+  id: string;
 }
 
 interface CardProps {
@@ -53,11 +55,15 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
             <SkeletonText fontSize="md" mt={7} noOfLines={1} />
           </>
         ) : (
-          <Box color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}>
-            <Heading fontSize="2xl">{data.title}</Heading>
-            <Text mt={2.5} fontSize="md">
-              {data.description}
-            </Text>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}>
+              <Heading fontSize="2xl">{data.title}</Heading>
+              <Text mt={2.5} fontSize="md">
+                {data.description}
+              </Text>
+            </Box>
+
+            <ModalDeleteImage id={data.id} />
           </Box>
         )}
       </Box>

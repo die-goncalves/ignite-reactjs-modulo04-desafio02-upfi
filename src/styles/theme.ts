@@ -45,6 +45,12 @@ export const theme = extendTheme({
       'color-light': '#353431',
       'color-dark': '#FBFBFB',
     },
+    modalDeleteImage: {
+      'background-light': '#FBFBFB',
+      'background-dark': '#353431',
+      'color-light': '#353431',
+      'color-dark': '#FBFBFB',
+    },
     loading: {
       'circular-progress-dark': '#DD6B20',
       'circular-progress-light': '#FFA164',
@@ -70,7 +76,11 @@ export const theme = extendTheme({
           bgColor: colorMode === 'dark' ? '#DD6B20' : '#FFA164',
           color: colorMode === 'dark' ? '#FBFBFB' : '#3B3835',
           _hover: {
-            bgColor: colorMode === 'dark' ? '#BC5B1B' : '#FFB973'
+            bgColor: colorMode === 'dark' ? '#BC5B1B' : '#FFB973',
+            _disabled: {
+              bgColor: colorMode === 'dark' ? '#DD6B20' : '#FFA164',
+              opacity: 0.4,
+            }
           },
           _active: {
             bgColor: colorMode === 'dark' ? '#A65018' : '#FFC97D'
@@ -85,7 +95,7 @@ export const theme = extendTheme({
           _active: {
             bgColor: colorMode === 'dark' ? '#1B1A18' : '#F5F5F5'
           }
-        }),
+        })
       }
     },
   },
