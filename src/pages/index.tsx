@@ -1,5 +1,5 @@
-import { Button, Box, useColorMode } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { Box, useColorMode, CircularProgress } from '@chakra-ui/react';
+import { useMemo, useRef } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
 import { Header } from '../components/Header';
@@ -7,6 +7,7 @@ import { CardList } from '../components/CardList';
 import { api } from '../services/api';
 import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
+import useIntersectionObserver from '../hooks/useIntersectionObserver';
 
 interface Image {
   title: string;
@@ -23,11 +24,11 @@ interface QueryResult {
 
 export default function Home(): JSX.Element {
   const { colorMode } = useColorMode();
+  let loadMoreButtonRef = useRef<HTMLDivElement>(null);
   const {
     data,
     isLoading,
     isError,
-    isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery(
@@ -57,36 +58,54 @@ export default function Home(): JSX.Element {
     }
   }, [data]);
 
-  if (isLoading) {
-    return <Loading />
-  }
-
-  if (isError) {
-    return <Error />
-  }
+  useIntersectionObserver({
+    target: loadMoreButtonRef,
+    onIntersect: fetchNextPage,
+    enabled: hasNextPage,
+    isLoading: isLoading,
+  })
 
   return (
     <>
-      <Header />
+      {
+        (() => {
+          if (isLoading) {
+            return <Loading />
+          } else if (isError) {
+            return <Error />
+          } else {
+            return (
+              <>
+                <Header />
 
-      <Box maxW={1120} px={20} mx="auto" my={20}>
-        <CardList cards={formattedData} />
+                <Box maxW={1120} px={20} mx="auto" my={20}>
+                  <CardList cards={formattedData} />
 
-        {hasNextPage &&
-          <Box w="100%" h="5rem">
-            <Button
-              marginTop="40px"
-              onClick={() => fetchNextPage()}
-              variant="orange-dark/light"
-            >
-              {isFetchingNextPage
-                ? 'Carregando...'
-                : 'Carregar mais'}
-            </Button>
-          </Box>
-
-        }
-      </Box>
+                  {hasNextPage &&
+                    <>
+                      <Box
+                        marginTop="40px"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        ref={loadMoreButtonRef}
+                      >
+                        <CircularProgress
+                          isIndeterminate
+                          size="3.25rem"
+                          thickness="0.75rem"
+                          color={colorMode === "dark" ? "loading.circular-progress-dark" : "loading.circular-progress-light"}
+                          trackColor={colorMode === "dark" ? "loading.track-dark" : "loading.track-light"}
+                        />
+                      </Box>
+                    </>
+                  }
+                </Box>
+              </>
+            )
+          }
+        })()
+      }
     </>
   );
 }

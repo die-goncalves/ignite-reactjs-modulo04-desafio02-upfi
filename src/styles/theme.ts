@@ -44,6 +44,12 @@ export const theme = extendTheme({
       'background-dark': '#353431',
       'color-light': '#353431',
       'color-dark': '#FBFBFB',
+    },
+    loading: {
+      'circular-progress-dark': '#DD6B20',
+      'circular-progress-light': '#FFA164',
+      'track-dark': '#FBFBFB',
+      'track-light': '#353431'
     }
   },
   fonts: {
