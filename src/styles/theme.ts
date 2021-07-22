@@ -47,7 +47,7 @@ export const theme = extendTheme({
     },
     modalDeleteImage: {
       'background-light': '#FBFBFB',
-      'background-dark': '#353431',
+      'background-dark': '#1B1A18',
       'color-light': '#353431',
       'color-dark': '#FBFBFB',
     },

@@ -126,5 +126,25 @@ export default async function handler(
       );
   }
 
+  if (req.method === 'PUT') {
+    const { title, description } = req.body;
+    const { imgId } = req.query;
+
+    return client
+      .query(
+        query.Update(query.Ref(query.Collection('images'), imgId),
+          { data: { title, description } },
+        )
+      )
+      .then(() => {
+        return res.status(200).json({ success: true });
+      })
+      .catch(err =>
+        res
+          .status(501)
+          .json({ error: `Sorry something Happened! ${err.message}` })
+      );
+  }
+
   return res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
 }

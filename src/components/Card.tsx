@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ModalDeleteImage } from './Modal/DeleteImage';
+import { ModalUpdateImage } from './Modal/UpdateImage';
 
 interface Card {
   title: string;
@@ -56,14 +57,20 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
           </>
         ) : (
           <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Box color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}>
+            <Box
+              color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}
+              maxWidth="11rem"
+            >
               <Heading fontSize="2xl">{data.title}</Heading>
               <Text mt={2.5} fontSize="md">
                 {data.description}
               </Text>
             </Box>
 
-            <ModalDeleteImage id={data.id} />
+            <Box>
+              <ModalDeleteImage imgId={data.id} />
+              <ModalUpdateImage imgCard={data} />
+            </Box>
           </Box>
         )}
       </Box>

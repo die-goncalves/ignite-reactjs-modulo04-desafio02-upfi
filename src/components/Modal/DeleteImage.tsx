@@ -42,7 +42,7 @@ interface QueryResult {
 }
 
 interface DeleteImageProps {
-  id: string;
+  imgId: string;
 }
 
 const setNewDataAfterDelete = (dataQuery: QueryResult, dataDatabase: QueryResult) => {
@@ -111,7 +111,7 @@ async function returnFaunaDatabase() {
   return formatData;
 }
 
-export function ModalDeleteImage({ id }: DeleteImageProps): JSX.Element {
+export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const initialFocusRef = React.useRef()
   const toast = useToast()
@@ -203,7 +203,7 @@ export function ModalDeleteImage({ id }: DeleteImageProps): JSX.Element {
                 Não
               </Button>
               <Button
-                onClick={() => deleteImage(id)}
+                onClick={() => deleteImage(imgId)}
                 isLoading={isLoading}
                 loadingText="Excluindo"
                 colorScheme="red"
