@@ -35,17 +35,7 @@ export const theme = extendTheme({
       'background-light': '#FBFBFB',
       'background-dark': '#353431'
     },
-    modalAddImage: {
-      'background-light': '#FBFBFB',
-      'background-dark': '#1B1A18'
-    },
-    modalViewImage: {
-      'background-light': '#FBFBFB',
-      'background-dark': '#353431',
-      'color-light': '#353431',
-      'color-dark': '#FBFBFB',
-    },
-    modalDeleteImage: {
+    modal: {
       'background-light': '#FBFBFB',
       'background-dark': '#1B1A18',
       'color-light': '#353431',
@@ -70,6 +60,9 @@ export const theme = extendTheme({
       },
     },
     Button: {
+      baseStyle: {
+        borderRadius: "0.25rem",
+      },
       variants: {
         'orange-dark/light': ({ colorMode }) => ({
           transition: 'all 0.2s',

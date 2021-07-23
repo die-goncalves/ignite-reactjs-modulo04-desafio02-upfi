@@ -167,7 +167,7 @@ export function ModalUpdateImage({
       <IconButton
         size="sm"
         variant="toogleIcon-dark/light"
-        borderRadius="0"
+        borderRadius="0.25rem"
         onClick={onOpen}
         aria-label="Atualizar informações da imagem"
         icon={
@@ -183,6 +183,8 @@ export function ModalUpdateImage({
       />
 
       <Modal
+        closeOnOverlayClick={false}
+        blockScrollOnMount={true}
         initialFocusRef={initialFocusRef}
         isOpen={isOpen}
         onClose={onClose}
@@ -192,12 +194,12 @@ export function ModalUpdateImage({
       >
         <ModalOverlay />
         <ModalContent
-          bg={colorMode === "dark" ? "modalDeleteImage.background-dark" : "modalDeleteImage.background-light"}
-          color={colorMode === "dark" ? "modalDeleteImage.color-dark" : "modalDeleteImage.color-light"}
+          bg={colorMode === "dark" ? "modal.background-dark" : "modal.background-light"}
+          color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
           borderRadius="none"
         >
           <ModalHeader>Adicione novo título ou descrição</ModalHeader>
-          <ModalCloseButton onClick={() => reset({
+          <ModalCloseButton borderRadius="0.25rem" onClick={() => reset({
             title: imgCard.title,
             description: imgCard.description
           })} />
@@ -209,7 +211,7 @@ export function ModalUpdateImage({
               alt={imgCard.title}
               objectFit="cover"
               w="max"
-              h={48}
+              h={40}
             />
 
             <Box

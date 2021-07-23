@@ -24,6 +24,7 @@ export function Header(): JSX.Element {
             <IconButton
               position="relative"
               variant="toogleIcon-dark/light"
+              borderRadius="0.25rem"
               aria-label={colorMode === "dark" ? "Ativar modo escuro" : "Ativar modo claro"}
               title={colorMode === "dark" ? "Ativar modo escuro" : "Ativar modo claro"}
               onClick={toggleColorMode}

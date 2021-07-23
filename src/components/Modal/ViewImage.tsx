@@ -32,9 +32,9 @@ export function ModalViewImage({
       >
         <ModalOverlay />
         <ModalContent
-          bg={colorMode === "dark" ? "modalViewImage.background-dark" : "modalViewImage.background-light"}
-          color={colorMode === "dark" ? "modalViewImage.color-dark" : "modalViewImage.color-light"}
-          borderRadius="0rem 0rem 0.375rem 0.375rem"
+          bg={colorMode === "dark" ? "modal.background-dark" : "modal.background-light"}
+          color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
+          borderRadius="none"
           maxWidth="fit-content"
         >
           <ModalBody
@@ -50,7 +50,6 @@ export function ModalViewImage({
           <ModalFooter
             paddingX="2.5"
             paddingY="2"
-            borderRadius="0rem 0rem 0.375rem 0.375rem"
           >
             <Link
               href={imgUrl}

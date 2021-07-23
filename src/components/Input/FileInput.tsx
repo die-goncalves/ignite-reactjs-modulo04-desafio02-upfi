@@ -151,7 +151,7 @@ const FileInputBase: ForwardRefRenderFunction<
               h="full"
               src={localImageUrl}
               alt="Uploaded photo"
-              borderRadius="md"
+              borderRadius="0.25rem"
               objectFit="cover"
             />
           ) : (
@@ -161,7 +161,7 @@ const FileInputBase: ForwardRefRenderFunction<
               flexDir="column"
               justifyContent="center"
               alignItems="center"
-              borderRadius="md"
+              borderRadius="0.25rem"
               bgColor={colorMode === "dark" ? "inputs.background-dark" : "inputs.background-light"}
               color={colorMode === "dark" ? "inputs.placeholder-dark" : "inputs.placeholder-light"}
               borderWidth={error?.message && 2}

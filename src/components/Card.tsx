@@ -1,5 +1,6 @@
 import {
   Box,
+  ButtonGroup,
   Heading,
   Text,
   Image,
@@ -32,7 +33,6 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
     <Box
       position="relative"
       key={data.ts}
-      borderRadius="md"
       bgColor={colorMode === "dark" ? "card.background-dark" : "card.background-light"}
     >
       <Skeleton isLoaded={!isLoading}>
@@ -42,7 +42,6 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
           objectFit="cover"
           w="max"
           h={48}
-          borderTopRadius="md"
           onClick={() => viewImage(data.url)}
           onLoad={() => setIsLoading(false)}
           cursor="pointer"
@@ -67,10 +66,10 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
               </Text>
             </Box>
 
-            <Box>
+            <ButtonGroup isAttached>
               <ModalDeleteImage imgId={data.id} />
               <ModalUpdateImage imgCard={data} />
-            </Box>
+            </ButtonGroup >
           </Box>
         )}
       </Box>

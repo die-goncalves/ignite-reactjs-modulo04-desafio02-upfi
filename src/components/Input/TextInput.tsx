@@ -30,6 +30,7 @@ const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       isInvalid={!!error}
     >
       <ChakraInput
+        borderRadius="0.25rem"
         aria-label={name}
         name={name}
         ref={ref}

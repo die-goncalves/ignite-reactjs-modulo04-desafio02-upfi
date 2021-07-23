@@ -158,7 +158,7 @@ export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
       <IconButton
         size="sm"
         variant="toogleIcon-dark/light"
-        borderRadius="0"
+        borderRadius="0.25rem"
         onClick={onOpen}
         aria-label="Excluir imagem"
         icon={
@@ -184,11 +184,12 @@ export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
       >
         <ModalOverlay />
         <ModalContent
-          bgColor={colorMode === "dark" ? "modalDeleteImage.background-dark" : "modalDeleteImage.background-light"}
-          color={colorMode === "dark" ? "color-dark" : "color-light"}
+          bgColor={colorMode === "dark" ? "modal.background-dark" : "modal.background-light"}
+          color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
+          borderRadius="none"
         >
           <ModalHeader>Confirmação</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton borderRadius="0.25rem" />
           <ModalBody pb={6}>
             Tem certeza que deseja excluir a imagem?
           </ModalBody>
