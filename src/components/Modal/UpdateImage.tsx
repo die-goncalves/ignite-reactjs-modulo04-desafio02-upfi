@@ -18,7 +18,7 @@ import {
   Box,
   useToast,
 } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { RiImageEditFill } from 'react-icons/Ri';
 import { useForm } from 'react-hook-form';
 import { TextInput } from '../Input/TextInput';
@@ -89,40 +89,40 @@ export function ModalUpdateImage({
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    async (formData: UpdatedImg) => await api.put('/api/images', formData, {
-      params: {
-        imgId: imgCard.id
-      }
-    }), {
-    onMutate: async (updateImage): Promise<QueryContext> => {
-      await queryClient.cancelQueries('images')
+    async (variables: UpdatedImg) => {
+      await api.put(`/api/images/${imgCard.id}`, variables)
+    },
+    {
+      onMutate: async (variables): Promise<QueryContext> => {
+        await queryClient.cancelQueries('images')
 
-      const previousData = queryClient.getQueryData<QueryResult>('images')
-      const laterData = cloneDeep(previousData.pages)
+        const previousData = queryClient.getQueryData<QueryResult>('images')
+        const laterData = cloneDeep(previousData.pages)
 
-      laterData.forEach(page => {
-        page.data.forEach(img => {
-          if (img.id === imgCard.id) {
-            img.title = updateImage.title;
-            img.description = updateImage.description;
-          }
+        laterData.forEach(page => {
+          page.data.forEach(img => {
+            if (img.id === imgCard.id) {
+              img.title = variables.title;
+              img.description = variables.description;
+            }
+          })
         })
-      })
 
-      return { previousData, laterData }
-    },
-    onSuccess: (data, variables, context: QueryContext) => {
-      queryClient.setQueryData('images', () => {
-        return { pages: context.laterData, pageParams: context.previousData.pageParams }
-      })
-    },
-    onError: (error, variables, context: QueryContext) => {
-      queryClient.setQueryData('images', context.previousData)
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries('images')
+        return { previousData, laterData }
+      },
+      onSuccess: (data, variables, context: QueryContext) => {
+        queryClient.setQueryData('images', () => {
+          return { pages: context.laterData, pageParams: context.previousData.pageParams }
+        })
+      },
+      onError: (error, variables, context: QueryContext) => {
+        queryClient.setQueryData('images', context.previousData)
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('images')
+      }
     }
-  })
+  )
 
   const {
     register,
@@ -210,7 +210,7 @@ export function ModalUpdateImage({
               src={imgCard.url}
               alt={imgCard.title}
               objectFit="cover"
-              w="max"
+              w="100%"
               h={40}
             />
 
