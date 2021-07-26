@@ -110,23 +110,6 @@ export default async function handler(
     }
   }
 
-  if (req.method === 'DELETE') {
-    const { idImage } = req.query;
-
-    return client
-      .query(
-        query.Delete(query.Ref(query.Collection('images'), idImage))
-      )
-      .then(() => {
-        return res.status(200).json({ success: true });
-      })
-      .catch(err =>
-        res
-          .status(501)
-          .json({ error: `Sorry something Happened! ${err.message}` })
-      );
-  }
-
   if (req.method === 'PUT') {
     const { title, description } = req.body;
     const { imgId } = req.query;

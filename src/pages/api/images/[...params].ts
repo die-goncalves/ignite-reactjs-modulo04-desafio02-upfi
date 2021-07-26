@@ -8,6 +8,23 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
+  if (req.method === 'DELETE') {
+    const { params } = req.query;
+
+    return client
+      .query(
+        query.Delete(query.Ref(query.Collection('images'), params[0]))
+      )
+      .then(() => {
+        return res.status(200).json({ success: true });
+      })
+      .catch(err =>
+        res
+          .status(501)
+          .json({ error: `Sorry something Happened! ${err.message}` })
+      );
+  }
+
   if (req.method === 'PUT') {
     const { params } = req.query;
 
