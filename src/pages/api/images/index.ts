@@ -35,6 +35,7 @@ export default async function handler(
             title,
             description,
             url,
+            isFavorite: false,
           },
         })
       )

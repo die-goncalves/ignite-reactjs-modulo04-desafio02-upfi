@@ -7,10 +7,12 @@ import {
   Skeleton,
   SkeletonText,
   useColorMode,
+  VStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ModalDeleteImage } from './Modal/DeleteImage';
 import { ModalUpdateImage } from './Modal/UpdateImage';
+import { ButtonFavoriteImage } from './Button/FavoriteImage';
 
 interface Card {
   title: string;
@@ -18,6 +20,7 @@ interface Card {
   url: string;
   ts: number;
   id: string;
+  isFavorite: boolean;
 }
 
 interface CardProps {
@@ -36,41 +39,52 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
       bgColor={colorMode === "dark" ? "card.background-dark" : "card.background-light"}
     >
       <Skeleton isLoaded={!isLoading}>
-        <Image
-          src={data.url}
-          alt={data.title}
-          objectFit="cover"
-          w="max"
-          h={48}
-          onClick={() => viewImage(data.url)}
-          onLoad={() => setIsLoading(false)}
-          cursor="pointer"
-        />
+        <Box position="relative">
+          <Image
+            src={data.url}
+            alt={data.title}
+            objectFit="cover"
+            w="100%"
+            h={48}
+            onClick={() => viewImage(data.url)}
+            onLoad={() => setIsLoading(false)}
+            cursor="pointer"
+          />
+        </Box>
       </Skeleton>
 
-      <Box pt={5} pb={4} px={6}>
+      <Box pt={3} pb={3} px={4}>
         {isLoading ? (
           <>
             <SkeletonText fontSize="2xl" mt={2} noOfLines={1} />
             <SkeletonText fontSize="md" mt={7} noOfLines={1} />
           </>
         ) : (
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <VStack
+            display="flex"
+            width="100%"
+            spacing={2.5}
+            color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}
+          >
             <Box
-              color={colorMode === "dark" ? "card.color-dark" : "card.color-light"}
-              maxWidth="11rem"
+              width="inherit"
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
             >
               <Heading fontSize="2xl">{data.title}</Heading>
-              <Text mt={2.5} fontSize="md">
+              <ButtonGroup isAttached>
+                <ModalDeleteImage imgId={data.id} />
+                <ModalUpdateImage imgCard={data} />
+                <ButtonFavoriteImage imgCard={data} />
+              </ButtonGroup >
+            </Box>
+            <Box width="inherit">
+              <Text fontSize="md">
                 {data.description}
               </Text>
             </Box>
-
-            <ButtonGroup isAttached>
-              <ModalDeleteImage imgId={data.id} />
-              <ModalUpdateImage imgCard={data} />
-            </ButtonGroup >
-          </Box>
+          </VStack>
         )}
       </Box>
     </Box>

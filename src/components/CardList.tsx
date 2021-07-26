@@ -9,6 +9,7 @@ interface Card {
   url: string;
   ts: number;
   id: string;
+  isFavorite: boolean;
 }
 
 interface CardsProps {
@@ -36,7 +37,8 @@ export function CardList({ cards }: CardsProps): JSX.Element {
                 title: card.title,
                 ts: card.ts,
                 url: card.url,
-                id: card.id
+                id: card.id,
+                isFavorite: card.isFavorite
               }}
               viewImage={() => viewImage(card.url)}
             />

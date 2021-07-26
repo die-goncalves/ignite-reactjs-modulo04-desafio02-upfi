@@ -15,6 +15,7 @@ interface Image {
   url: string;
   ts: number;
   id: string;
+  isFavorite: boolean;
 }
 
 interface QueryResult {
