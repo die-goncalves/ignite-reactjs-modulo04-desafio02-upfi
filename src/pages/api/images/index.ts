@@ -1,24 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import fauna from 'faunadb';
+import { supabase } from '../../../services/supabaseClient';
 
-const { query } = fauna;
-const client = new fauna.Client({ secret: process.env.FAUNA_API_KEY });
-
-interface ImagesQueryResponse {
-  after?: {
-    id: string;
-  };
-  data: {
-    data: {
-      title: string;
-      description: string;
-      url: string;
-    };
-    ts: number;
-    ref: {
-      id: string;
-    };
-  }[];
+type Image = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  isFavorite: boolean;
+  date: string;
 }
 
 export default async function handler(
@@ -28,85 +17,77 @@ export default async function handler(
   if (req.method === 'POST') {
     const { url, title, description } = req.body;
 
-    return client
-      .query(
-        query.Create(query.Collection('images'), {
-          data: {
-            title,
-            description,
-            url,
-            isFavorite: false,
-          },
-        })
-      )
-      .then(() => {
-        return res.status(201).json({ success: true });
-      })
-      .catch(err =>
-        res
-          .status(501)
-          .json({ error: `Sorry something Happened! ${err.message}` })
-      );
+    const { data, error } = await supabase
+      .from<Image>("images")
+      .insert([
+        {
+          title,
+          description,
+          url,
+          isFavorite: false
+        }
+      ])
+
+    if (error) {
+      res
+        .status(501)
+        .json({ error: `Sorry something Happened! ${error.message}` })
+    }
+
+    if (data) {
+      return res.status(201).json({ success: true });
+    }
   }
 
   if (req.method === 'GET') {
     const { after, get } = req.query;
 
     if (get === 'all-images') {
-      return client
-        .query<ImagesQueryResponse>(
-          query.Map(
-            query.Paginate(
-              query.Documents(query.Collection('images')),
-            ),
-            query.Lambda('X', query.Get(query.Var('X')))
-          )
-        )
-        .then(response => {
-          const formattedData = response.data.map(item => ({
-            ...item.data,
-            ts: item.ts,
-            id: item.ref.id,
-          }));
+      const { data, error } = await supabase
+        .from<Image>('images')
+        .select()
+        .order('date', { ascending: true })
 
-          return res.json({
-            data: formattedData
-          });
-        })
-        .catch(err => {
-          return res.status(400).json(err);
+      if (error) {
+        return res.status(400).json(error);
+      }
+
+      if (data) {
+        return res.json({
+          data
         });
+      }
     } else {
-      const queryOptions = {
-        size: 6,
-        ...(after && { after: query.Ref(query.Collection('images'), after) }),
-      };
+      const imagesPerPage = 6;
 
-      return client
-        .query<ImagesQueryResponse>(
-          query.Map(
-            query.Paginate(
-              query.Documents(query.Collection('images')),
-              queryOptions
-            ),
-            query.Lambda('X', query.Get(query.Var('X')))
-          )
-        )
-        .then(response => {
-          const formattedData = response.data.map(item => ({
-            ...item.data,
-            ts: item.ts,
-            id: item.ref.id,
-          }));
+      const { data, error } = await supabase
+        .from<Image>('images')
+        .select()
+        .order('date', { ascending: true })
 
+      if (error) {
+        return res.status(400).json(error);
+      }
+
+      if (data.length !== 0) {
+        const positionImage = data.findIndex((item) => item.id === after)
+        if (positionImage === -1) {
           return res.json({
-            data: formattedData,
-            after: response.after ? response.after[0].id : null,
+            data: data.slice(0, imagesPerPage),
+            after: data[imagesPerPage]?.id ?? null,
           });
-        })
-        .catch(err => {
-          return res.status(400).json(err);
+        } else {
+          return res.json({
+            data: data.slice(positionImage, positionImage + imagesPerPage),
+            after: data[positionImage + imagesPerPage]?.id ?? null,
+          });
+        }
+      } else {
+        return res.json({
+          data: [],
+          after: null,
         });
+      }
     }
   }
 

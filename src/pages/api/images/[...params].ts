@@ -1,8 +1,14 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import fauna from 'faunadb';
+import { supabase } from '../../../services/supabaseClient';
 
-const { query } = fauna;
-const client = new fauna.Client({ secret: process.env.FAUNA_API_KEY });
+type Image = {
+  id: string;
+  title: string;
+  description: string;
+  url: string;
+  isFavorite: boolean;
+  date: string;
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,53 +17,52 @@ export default async function handler(
   if (req.method === 'DELETE') {
     const { params } = req.query;
 
-    return client
-      .query(
-        query.Delete(query.Ref(query.Collection('images'), params[0]))
-      )
-      .then(() => {
-        return res.status(200).json({ success: true });
-      })
-      .catch(err =>
-        res
-          .status(501)
-          .json({ error: `Sorry something Happened! ${err.message}` })
-      );
+    const { data, error } = await supabase
+      .from<Image>('images')
+      .delete()
+      .match({ id: params[0] })
+
+    if (error) {
+      res
+        .status(501)
+        .json({ error: `Sorry something Happened! ${error.message}` })
+    }
+    if (data) {
+      return res.status(200).json({ success: true });
+    }
   }
 
   if (req.method === 'PUT') {
     const { params } = req.query;
 
     if (params[1] === 'favorite') {
-      return client
-        .query(
-          query.Update(query.Ref(query.Collection('images'), params[0]),
-            { data: { isFavorite: !req.body.isFavorite } },
-          )
-        )
-        .then(() => {
-          return res.status(200).json({ success: true });
-        })
-        .catch(err =>
-          res
-            .status(501)
-            .json({ error: `Sorry something Happened! ${err.message}` })
-        );
+      const { data, error } = await supabase
+        .from<Image>('images')
+        .update({ isFavorite: !req.body.isFavorite })
+        .match({ id: params[0] })
+
+      if (error) {
+        res
+          .status(501)
+          .json({ error: `Sorry something Happened! ${error.message}` })
+      }
+      if (data) {
+        return res.status(200).json({ success: true });
+      }
     } else {
-      return client
-        .query(
-          query.Update(query.Ref(query.Collection('images'), params[0]),
-            { data: { title: req.body.title, description: req.body.description } },
-          )
-        )
-        .then(() => {
-          return res.status(200).json({ success: true });
-        })
-        .catch(err =>
-          res
-            .status(501)
-            .json({ error: `Sorry something Happened! ${err.message}` })
-        );
+      const { data, error } = await supabase
+        .from<Image>('images')
+        .update({ title: req.body.title, description: req.body.description })
+        .match({ id: params[0] })
+
+      if (error) {
+        res
+          .status(501)
+          .json({ error: `Sorry something Happened! ${error.message}` })
+      }
+      if (data) {
+        return res.status(200).json({ success: true });
+      }
     }
   }
 
