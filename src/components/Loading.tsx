@@ -1,6 +1,9 @@
 import { Box, Heading, Flex, Progress } from '@chakra-ui/react';
+import { useFavoriteImages } from '../contexts/FavoriteImagesContext';
 
 export function Loading(): JSX.Element {
+  const { showFavorites } = useFavoriteImages();
+
   return (
     <Flex
       justifyContent="center"
@@ -9,7 +12,7 @@ export function Loading(): JSX.Element {
       flexDir="column"
     >
       <Box>
-        <Heading>Carregando aplicação...</Heading>
+        <Heading>{showFavorites ? 'Carregando álbum de favoritos...' : 'Carregando álbum...'}</Heading>
         <Progress
           mt={4}
           size="xs"

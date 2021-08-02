@@ -24,29 +24,31 @@ import { useForm } from 'react-hook-form';
 import { TextInput } from '../Input/TextInput';
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../../services/api';
-import cloneDeep from 'lodash.clonedeep';
+import { updateInfoImageFromCache } from '../../utils/mutationFavorite';
 
-interface Card {
+interface Image {
+  id: string;
   title: string;
   description: string;
   url: string;
-  ts: number;
-  id: string;
+  isFavorite: boolean;
 }
 
-interface pagesQueryResult {
+interface Page {
   after: string | null;
-  data: Array<Card> | [];
+  data: Array<Image>;
 }
 
 interface QueryResult {
-  pages: Array<pagesQueryResult>;
+  pages: Array<Page>;
   pageParams: Array<string | undefined>;
 }
 
 interface QueryContext {
   previousData: QueryResult;
-  laterData: Array<pagesQueryResult>;
+  laterData: Array<Page>;
+  favoritePreviousData: QueryResult;
+  favoriteLaterData: Array<Page>;
 }
 
 interface UpdatedImg {
@@ -55,11 +57,11 @@ interface UpdatedImg {
 }
 
 interface ModalUpdateImageProps {
-  imgCard: Card;
+  image: Image;
 }
 
 export function ModalUpdateImage({
-  imgCard
+  image
 }: ModalUpdateImageProps): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -90,36 +92,36 @@ export function ModalUpdateImage({
   const queryClient = useQueryClient();
   const mutation = useMutation(
     async (variables: UpdatedImg) => {
-      await api.put(`/api/images/${imgCard.id}`, variables)
+      await api.put(`/api/images/${image.id}`, variables)
     },
     {
       onMutate: async (variables): Promise<QueryContext> => {
         await queryClient.cancelQueries('images')
+        await queryClient.cancelQueries('favorites')
 
         const previousData = queryClient.getQueryData<QueryResult>('images')
-        const laterData = cloneDeep(previousData.pages)
+        const favoritePreviousData = queryClient.getQueryData<QueryResult>('favorites')
 
-        laterData.forEach(page => {
-          page.data.forEach(img => {
-            if (img.id === imgCard.id) {
-              img.title = variables.title;
-              img.description = variables.description;
-            }
-          })
-        })
+        const laterData = updateInfoImageFromCache(previousData, variables, image.id)
+        const favoriteLaterData = updateInfoImageFromCache(favoritePreviousData, variables, image.id)
 
-        return { previousData, laterData }
+        return { previousData, laterData, favoritePreviousData, favoriteLaterData }
       },
       onSuccess: (data, variables, context: QueryContext) => {
         queryClient.setQueryData('images', () => {
           return { pages: context.laterData, pageParams: context.previousData.pageParams }
         })
+        queryClient.setQueryData('favorites', () => {
+          return { pages: context.favoriteLaterData, pageParams: context.favoritePreviousData.pageParams }
+        })
       },
       onError: (error, variables, context: QueryContext) => {
         queryClient.setQueryData('images', context.previousData)
+        queryClient.setQueryData('favorites', context.favoritePreviousData)
       },
       onSettled: () => {
         queryClient.invalidateQueries('images')
+        queryClient.invalidateQueries('favorites')
       }
     }
   )
@@ -131,8 +133,8 @@ export function ModalUpdateImage({
     formState,
   } = useForm({
     defaultValues: {
-      title: imgCard.title,
-      description: imgCard.description
+      title: image.title,
+      description: image.description
     }
   });
   const { errors } = formState;
@@ -157,7 +159,10 @@ export function ModalUpdateImage({
         isClosable: true,
       })
     } finally {
-      reset();
+      reset({
+        title: data.title,
+        description: data.description
+      });
       onClose();
     }
   }
@@ -200,15 +205,15 @@ export function ModalUpdateImage({
         >
           <ModalHeader>Adicione novo título ou descrição</ModalHeader>
           <ModalCloseButton borderRadius="0.25rem" onClick={() => reset({
-            title: imgCard.title,
-            description: imgCard.description
+            title: image.title,
+            description: image.description
           })} />
           <ModalBody
             padding="0"
           >
             <Image
-              src={imgCard.url}
-              alt={imgCard.title}
+              src={image.url}
+              alt={image.title}
               objectFit="cover"
               w="100%"
               h={40}
@@ -251,8 +256,8 @@ export function ModalUpdateImage({
                 type="button"
                 onClick={() => {
                   reset({
-                    title: imgCard.title,
-                    description: imgCard.description
+                    title: image.title,
+                    description: image.description
                   })
                   onClose()
                 }}

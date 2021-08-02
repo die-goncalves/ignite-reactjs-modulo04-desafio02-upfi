@@ -14,17 +14,16 @@ import { ModalDeleteImage } from './Modal/DeleteImage';
 import { ModalUpdateImage } from './Modal/UpdateImage';
 import { ButtonFavoriteImage } from './Button/FavoriteImage';
 
-interface Card {
+interface Image {
+  id: string;
   title: string;
   description: string;
   url: string;
-  ts: number;
-  id: string;
   isFavorite: boolean;
 }
 
 interface CardProps {
-  data: Card;
+  data: Image;
   viewImage: (url: string) => void;
 }
 
@@ -35,7 +34,7 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
   return (
     <Box
       position="relative"
-      key={data.ts}
+      key={data.id}
       bgColor={colorMode === "dark" ? "card.background-dark" : "card.background-light"}
     >
       <Skeleton isLoaded={!isLoading}>
@@ -74,9 +73,9 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
             >
               <Heading fontSize="2xl">{data.title}</Heading>
               <ButtonGroup isAttached>
-                <ModalDeleteImage imgId={data.id} />
-                <ModalUpdateImage imgCard={data} />
-                <ButtonFavoriteImage imgCard={data} />
+                <ModalDeleteImage imageId={data.id} />
+                <ModalUpdateImage image={data} />
+                <ButtonFavoriteImage image={data} />
               </ButtonGroup >
             </Box>
             <Box width="inherit">

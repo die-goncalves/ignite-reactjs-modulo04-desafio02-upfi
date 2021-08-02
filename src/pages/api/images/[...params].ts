@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '../../../services/supabaseClient';
 
-type Image = {
+interface Image {
   id: string;
   title: string;
   description: string;

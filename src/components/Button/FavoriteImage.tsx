@@ -7,89 +7,88 @@ import {
 import React from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../../services/api';
-import cloneDeep from 'lodash.clonedeep';
 import { RiHeart3Fill, RiHeart3Line } from 'react-icons/Ri';
+import { switchToTheSameAmountOfPagesAsBefore, updateFavoriteImageFromCache } from '../../utils/mutationFavorite';
 
-interface Card {
+interface Image {
+  id: string;
   title: string;
   description: string;
   url: string;
-  ts: number;
-  id: string;
   isFavorite: boolean;
 }
 
-interface pagesQueryResult {
+interface Page {
   after: string | null;
-  data: Array<Card> | [];
+  data: Array<Image>;
 }
 
 interface QueryResult {
-  pages: Array<pagesQueryResult>;
+  pages: Array<Page>;
   pageParams: Array<string | undefined>;
 }
 
 interface QueryContext {
   previousData: QueryResult;
-  laterData: Array<pagesQueryResult>;
+  laterData: QueryResult;
+  favoritePreviousData: QueryResult;
+  favoriteLaterData: QueryResult;
 }
 
 interface ButtonFavoriteImageProps {
-  imgCard: Card;
+  image: Image;
 }
 
 export function ButtonFavoriteImage({
-  imgCard
+  image
 }: ButtonFavoriteImageProps): JSX.Element {
   const toast = useToast();
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    async (variables: string) => await api.put(`/api/images/${variables}/favorite`, imgCard),
+    async (variables: string) => await api.put(`/api/images/${variables}/favorite`, image),
     {
       onMutate: async (variables): Promise<QueryContext> => {
         await queryClient.cancelQueries('images')
+        await queryClient.cancelQueries('favorites')
 
         const previousData = queryClient.getQueryData<QueryResult>('images')
-        const laterData = cloneDeep(previousData.pages)
+        const favoritePreviousData = queryClient.getQueryData<QueryResult>('favorites')
 
-        laterData.forEach(page => {
-          page.data.forEach(img => {
-            if (img.id === variables) {
-              img.isFavorite = !img.isFavorite;
-            }
-          })
-        })
+        const { normalUpdateQuery, favoriteUpdateQuery } = await updateFavoriteImageFromCache(variables, 6)
+        const laterData = switchToTheSameAmountOfPagesAsBefore(previousData, normalUpdateQuery);
+        const favoriteLaterData = switchToTheSameAmountOfPagesAsBefore(favoritePreviousData, favoriteUpdateQuery);
 
-        return { previousData, laterData }
+        return { previousData, laterData, favoritePreviousData, favoriteLaterData }
       },
       onSuccess: (data, variables, context: QueryContext) => {
-        queryClient.setQueryData('images', () => {
-          return { pages: context.laterData, pageParams: context.previousData.pageParams }
-        })
+        queryClient.setQueryData('images', context.laterData)
+        queryClient.setQueryData('favorites', context.favoriteLaterData)
       },
       onError: (error, variables, context: QueryContext) => {
         queryClient.setQueryData('images', context.previousData)
+        queryClient.setQueryData('favorites', context.favoritePreviousData)
       },
       onSettled: () => {
         queryClient.invalidateQueries('images')
+        queryClient.invalidateQueries('favorites')
       }
     }
   )
 
-  const favoriteImage = async (imgCard: Card) => {
+  const favoriteImage = async (image: Image) => {
     try {
-      await mutation.mutateAsync(imgCard.id);
+      await mutation.mutateAsync(image.id);
       toast({
-        title: imgCard.isFavorite ? "Imagem desfavoritada" : "Imagem favoritada",
-        description: imgCard.isFavorite ? "Sua imagem foi removida da lista de favoritos." : "Sua imagem foi adicionada na lista de favoritos.",
+        title: image.isFavorite ? "Imagem desfavoritada" : "Imagem favoritada",
+        description: image.isFavorite ? "Sua imagem foi removida da lista de favoritos." : "Sua imagem foi adicionada na lista de favoritos.",
         status: "info",
         isClosable: true,
       })
     } catch (error) {
       toast({
-        title: imgCard.isFavorite ? "Falha ao desfavoritar" : "Falha ao favoritar",
-        description: imgCard.isFavorite ? "Ocorreu um erro ao tentar desfavoritar a imagem." : "Ocorreu um erro ao tentar favoritar a imagem.",
+        title: image.isFavorite ? "Falha ao desfavoritar" : "Falha ao favoritar",
+        description: image.isFavorite ? "Ocorreu um erro ao tentar desfavoritar a imagem." : "Ocorreu um erro ao tentar favoritar a imagem.",
         status: "error",
         isClosable: true,
       })
@@ -102,12 +101,12 @@ export function ButtonFavoriteImage({
         size="sm"
         variant="toogleIcon-dark/light"
         borderRadius="0.25rem"
-        onClick={() => favoriteImage(imgCard)}
+        onClick={() => favoriteImage(image)}
         aria-label="Favoritar/Desfavoritar imagem"
         isLoading={mutation.isLoading}
         spinner={<Spinner size="sm" color="#FF4142" />}
         icon={
-          imgCard.isFavorite ? (<Icon
+          image.isFavorite ? (<Icon
             as={RiHeart3Fill}
             role="img"
             aria-label="Favoritar imagem"

@@ -1,8 +1,8 @@
 import { Box, Flex, Button, useDisclosure, Icon, IconButton, useColorMode, HStack } from '@chakra-ui/react';
 import { RiSunLine, RiMoonLine } from 'react-icons/Ri';
-
 import { ModalAddImage } from './Modal/AddImage';
 import { Logo } from './Logo';
+import { FavoritesAlbum } from './FavoritesAlbum';
 
 export function Header(): JSX.Element {
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -12,15 +12,16 @@ export function Header(): JSX.Element {
     <>
       <Box bgColor={colorMode === "dark" ? "header.background-dark" : "header.background-light"}>
         <Flex
+          height="12.5vh"
           justifyContent="space-between"
           alignItems="center"
           maxW={1120}
           mx="auto"
           px={20}
-          py={6}
         >
           <Logo />
-          <HStack spacing="24px">
+          <HStack spacing="12px">
+            <FavoritesAlbum />
             <IconButton
               position="relative"
               variant="toogleIcon-dark/light"

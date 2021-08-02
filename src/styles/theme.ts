@@ -97,6 +97,7 @@ export const theme = extendTheme({
       'body': {
         bg: mode('#F5F5F5', '#1B1A18')(props),
         color: mode('#3B3835', '#F3F2F2')(props),
+        overflow: 'hidden',
       },
     }),
   },

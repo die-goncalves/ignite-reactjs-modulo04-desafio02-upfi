@@ -18,105 +18,38 @@ import { RiDeleteBin2Fill } from 'react-icons/Ri';
 import React from "react";
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../../services/api';
+import { deleteImageFromCache, switchToTheSameAmountOfPagesAsBefore } from "../../utils/mutationFavorite";
 
-interface Card {
+interface Image {
+  id: string;
   title: string;
   description: string;
   url: string;
-  ts: number;
-  id: string;
+  isFavorite: boolean;
 }
 
-interface databaseData {
-  data: Array<Card> | [];
-}
-
-interface pagesQueryResult {
+interface Page {
   after: string | null;
-  data: Array<Card> | [];
+  data: Array<Image>;
 }
 
 interface QueryResult {
-  pages: Array<pagesQueryResult>;
+  pages: Array<Page>;
   pageParams: Array<string | undefined>;
 }
 
 interface QueryContext {
   previousData: QueryResult;
   laterData: QueryResult;
+  favoritePreviousData: QueryResult;
+  favoriteLaterData: QueryResult;
 }
 
 interface DeleteImageProps {
-  imgId: string;
+  imageId: string;
 }
 
-const setNewDataAfterDelete = (dataQuery: QueryResult, dataDatabase: QueryResult) => {
-  const numberOfPagesViewed = dataQuery.pages.length;
-  const responsePageParams = dataDatabase.pageParams.slice(0, numberOfPagesViewed);
-  const responsePages = dataDatabase.pages.slice(0, numberOfPagesViewed);
-  return {
-    pageParams: responsePageParams,
-    pages: responsePages
-  }
-}
-
-async function returnFaunaDatabase() {
-  const pageSize = 6;
-  const { data: dataX } = await api.get<databaseData>('/api/images', {
-    params: {
-      get: 'all-images'
-    }
-  });
-
-  let formatData: QueryResult = {
-    pageParams: [],
-    pages: []
-  };
-  let startVector = 0;
-  let endVector = pageSize;
-  let eachPage: pagesQueryResult;
-
-  if (dataX.data.length === 0) {
-    eachPage = {
-      data: [],
-      after: null
-    }
-    formatData.pageParams.push(undefined);
-    formatData.pages.push(eachPage);
-  } else {
-    let init = dataX.data.slice(startVector, endVector);
-    while (init.length !== 0) {
-      startVector = startVector + pageSize;
-      endVector = endVector + pageSize;
-      const prox = dataX.data.slice(startVector, endVector);
-
-      if (prox.length !== 0) {
-        eachPage = {
-          data: init,
-          after: prox[0].id
-        }
-      } else {
-        eachPage = {
-          data: init,
-          after: null
-        }
-      }
-      formatData.pages.push(eachPage);
-
-      if (formatData.pages.length === 1) {
-        formatData.pageParams.push(undefined);
-      } else {
-        formatData.pageParams.push(eachPage.data[0].id)
-      }
-
-      init = prox;
-    }
-  }
-
-  return formatData;
-}
-
-export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
+export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const initialFocusRef = React.useRef()
   const toast = useToast()
@@ -124,27 +57,32 @@ export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
 
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading } = useMutation(
-    async () => await api.delete(`/api/images/${imgId}`),
+    async () => await api.delete(`/api/images/${imageId}`),
     {
       onMutate: async (): Promise<QueryContext> => {
         await queryClient.cancelQueries('images')
+        await queryClient.cancelQueries('favorites')
 
         const previousData = queryClient.getQueryData<QueryResult>('images')
+        const favoritePreviousData = queryClient.getQueryData<QueryResult>('favorites')
 
-        const database = await returnFaunaDatabase()
-        const { pages, pageParams } = setNewDataAfterDelete(previousData, database)
-        const laterData = { pages, pageParams }
+        const { normalUpdateQuery, favoriteUpdateQuery } = await deleteImageFromCache(imageId, 6)
+        const laterData = switchToTheSameAmountOfPagesAsBefore(previousData, normalUpdateQuery);
+        const favoriteLaterData = switchToTheSameAmountOfPagesAsBefore(favoritePreviousData, favoriteUpdateQuery);
 
-        return { previousData, laterData }
+        return { previousData, laterData, favoritePreviousData, favoriteLaterData }
       },
       onSuccess: (data, variables, context: QueryContext) => {
         queryClient.setQueryData('images', context.laterData)
+        queryClient.setQueryData('favorites', context.favoriteLaterData)
       },
       onError: (error, variables, context: QueryContext) => {
         queryClient.setQueryData('images', context.previousData)
+        queryClient.setQueryData('favorites', context.favoritePreviousData)
       },
       onSettled: () => {
         queryClient.invalidateQueries('images')
+        queryClient.invalidateQueries('favorites')
       }
     });
 
@@ -158,14 +96,13 @@ export function ModalDeleteImage({ imgId }: DeleteImageProps): JSX.Element {
         isClosable: true,
       })
     } catch (error) {
+      onClose();
       toast({
         title: "Falha ao excluir",
         description: "Ocorreu um erro ao tentar excluir a imagem.",
         status: "error",
         isClosable: true,
       })
-    } finally {
-      onClose();
     }
   }
 
