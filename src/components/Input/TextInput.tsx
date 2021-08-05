@@ -39,11 +39,11 @@ const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         errorBorderColor={colorMode === "dark" ? "errors.dark" : "errors.light"}
         _placeholder={{
           color: colorMode === "dark" ? "inputs.placeholder-dark" : "inputs.placeholder-light",
+          fontSize: "1rem",
         }}
         _hover={{
           borderColor: colorMode === "dark" ? "button.border-dark" : "button.border-light"
         }}
-        py={6}
         pr={8}
         {...rest}
       />

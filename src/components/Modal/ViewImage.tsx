@@ -41,8 +41,8 @@ export function ModalViewImage({
             padding="0"
           >
             <Image
-              maxWidth="900px"
-              maxHeight="600px"
+              maxWidth="75vw"
+              maxHeight="75vh"
               src={imgUrl}
             />
           </ModalBody>

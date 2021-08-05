@@ -1,13 +1,21 @@
 import { extendTheme } from '@chakra-ui/react';
-import { mode } from '@chakra-ui/theme-tools'
+import { mode } from '@chakra-ui/theme-tools';
+import { createBreakpoints } from "@chakra-ui/theme-tools";
+
+const breakpoints = createBreakpoints({
+  sm: "30em",
+  md: "48em",
+  lg: "64em",
+  xl: "90em",
+});
 
 export const theme = extendTheme({
   colors: {
     card: {
-      'background-light': '#FBFBFB',
+      'background-light': '#FDFDFD',
       'background-dark': '#353431',
       'color-light': '#353431',
-      'color-dark': '#FBFBFB',
+      'color-dark': '#FDFDFD',
     },
     inputs: {
       'background-light': '#EEEEEE',
@@ -32,21 +40,27 @@ export const theme = extendTheme({
       'border-light': '#FFA164'
     },
     header: {
-      'background-light': '#FBFBFB',
+      'background-light': '#FDFDFD',
       'background-dark': '#353431'
     },
     modal: {
-      'background-light': '#FBFBFB',
+      'background-light': '#FDFDFD',
       'background-dark': '#1B1A18',
       'color-light': '#353431',
-      'color-dark': '#FBFBFB',
+      'color-dark': '#FDFDFD',
     },
     loading: {
       'circular-progress-dark': '#DD6B20',
       'circular-progress-light': '#FFA164',
-      'track-dark': '#FBFBFB',
+      'track-dark': '#FDFDFD',
       'track-light': '#353431'
-    }
+    },
+    body: {
+      'bg-light': '#F3F3F3',
+      'color-light': '#353431',
+      'bg-dark': '#1B1A18',
+      'color-dark': '#FDFDFD',
+    },
   },
   fonts: {
     heading: 'Roboto',
@@ -67,7 +81,7 @@ export const theme = extendTheme({
         'orange-dark/light': ({ colorMode }) => ({
           transition: 'all 0.2s',
           bgColor: colorMode === 'dark' ? '#DD6B20' : '#FFA164',
-          color: colorMode === 'dark' ? '#FBFBFB' : '#3B3835',
+          color: colorMode === 'dark' ? '#FDFDFD' : '#3B3835',
           _hover: {
             bgColor: colorMode === 'dark' ? '#BC5B1B' : '#FFB973',
             _disabled: {
@@ -81,7 +95,7 @@ export const theme = extendTheme({
         }),
         'toogleIcon-dark/light': ({ colorMode }) => ({
           bgColor: 'transparent',
-          color: colorMode === 'dark' ? '#FBFBFB' : '#3B3835',
+          color: colorMode === 'dark' ? '#FDFDFD' : '#3B3835',
           _hover: {
             bgColor: colorMode === 'dark' ? '#2b2926' : '#F8F8F8'
           },
@@ -95,13 +109,14 @@ export const theme = extendTheme({
   styles: {
     global: (props) => ({
       'body': {
-        bg: mode('#F5F5F5', '#1B1A18')(props),
-        color: mode('#3B3835', '#F3F2F2')(props),
+        bg: mode('body.bg-light', 'body.bg-dark')(props),
+        color: mode('body.color-light', 'body.color-dark')(props),
         overflow: 'hidden',
       },
     }),
   },
   config: {
     useSystemColorMode: true,
-  }
+  },
+  breakpoints,
 });

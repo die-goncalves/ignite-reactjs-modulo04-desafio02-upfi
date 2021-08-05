@@ -48,20 +48,25 @@ export const Album = ({ isLoading, isError, formattedData, hasNextPage, fetchNex
             return (
               <Box overflow="overlay" maxH="87.5vh" sx={{
                 '&::-webkit-scrollbar': {
-                  width: '5px',
+                  width: '7px',
                 },
                 '&::-webkit-scrollbar-track': {
                   backgroundColor: 'transparent',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: colorMode === 'dark' ? 'header.background-light' : 'header.background-dark',
+                  backgroundColor: colorMode === 'dark' ? 'body.color-dark' : 'body.bg-dark',
                   transition: '10s'
                 },
                 '&::-webkit-scrollbar-thumb:hover': {
-                  backgroundColor: colorMode === 'dark' ? '#D5D5D5' : '#4D4B47',
+                  backgroundColor: colorMode === 'dark' ? 'body.bg-light' : 'body.color-light',
                 },
               }}>
-                <Box maxW={1120} px={20} mx="auto" my="40px">
+                <Box
+                  maxW={1440}
+                  px={[0, "1.125rem", "1.5rem", "2.5rem"]}
+                  mx="auto"
+                  my={["1rem", "1.125rem", "1.5rem", "2.5rem"]}
+                >
                   <CardList cards={formattedData} />
 
                   <Loader hasNextPage={hasNextPage} ref={ref} />

@@ -10,7 +10,7 @@ export const FavoritesAlbum = (): JSX.Element => {
     <>
       <IconButton
         variant="toogleIcon-dark/light"
-        borderRadius="0.25rem"
+        borderRadius={["0.25rem 0 0 0.25rem", "0.25rem"]}
         aria-label="Abre/Fecha álbum de favoritos"
         title=" Álbum de favoritos"
         onClick={() => setShowFavorites(!showFavorites)}
@@ -20,8 +20,8 @@ export const FavoritesAlbum = (): JSX.Element => {
             color={showFavorites && "#FF4142"}
             role="img"
             position="absolute"
-            w="1.45rem"
-            h="1.45rem"
+            w={["1.24319375rem", "1.308625rem", "1.3775rem", "1.45rem", "1.5225rem"]}
+            h={["1.24319375rem", "1.308625rem", "1.3775rem", "1.45rem", "1.5225rem"]}
           />
         }
       />

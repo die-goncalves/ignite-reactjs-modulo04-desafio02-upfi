@@ -139,8 +139,8 @@ const FileInputBase: ForwardRefRenderFunction<
       <FormControl isInvalid={!!error}>
         <FormLabel
           mx="auto"
-          w={40}
-          h={40}
+          w={["8rem", "8.5rem", "9rem", "9.5rem", "11rem"]}
+          h={["8rem", "8.5rem", "9rem", "9.5rem", "11rem"]}
           htmlFor={name}
           cursor={isSending ? 'progress' : 'pointer'}
           opacity={isSending ? 0.5 : 1}
@@ -176,7 +176,11 @@ const FileInputBase: ForwardRefRenderFunction<
                   >
                     <CircularProgressLabel>{progress}%</CircularProgressLabel>
                   </CircularProgress>
-                  <Text as="span" pt={2} textAlign="center">
+                  <Text
+                    as="span"
+                    pt={2}
+                    textAlign="center"
+                  >
                     Enviando...
                   </Text>
                 </>
@@ -210,8 +214,17 @@ const FileInputBase: ForwardRefRenderFunction<
                     justifyContent="center"
                     flexDir="column"
                   >
-                    <Icon as={FiPlus} w={14} h={14} />
-                    <Text as="span" pt={2} textAlign="center">
+                    <Icon
+                      as={FiPlus}
+                      w={["2.5rem", "2.75rem", "3rem", "3.25rem", "3.5rem"]}
+                      h={["2.5rem", "2.75rem", "3rem", "3.25rem", "3.5rem"]}
+                    />
+                    <Text
+                      fontSize="1rem"
+                      as="span"
+                      pt={2}
+                      textAlign="center"
+                    >
                       Adicione sua imagem
                     </Text>
                   </Flex>

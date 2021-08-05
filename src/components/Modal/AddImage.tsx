@@ -6,6 +6,10 @@ import {
   ModalBody,
   ModalCloseButton,
   useColorMode,
+  useBreakpointValue,
+  Flex,
+  Text,
+  CloseButton,
 } from '@chakra-ui/react';
 
 import { FormAddImage } from '../Form/FormAddImage';
@@ -20,6 +24,8 @@ export function ModalAddImage({
   onClose,
 }: ModalAddImageProps): JSX.Element {
   const { colorMode } = useColorMode();
+  const modalVersions = useBreakpointValue({ base: "xs", sm: "sm", md: "md", lg: "lg", xl: "xl" })
+
   const handleCloseModal = (): void => {
     onClose();
   };
@@ -31,7 +37,7 @@ export function ModalAddImage({
       isOpen={isOpen}
       onClose={handleCloseModal}
       isCentered
-      size="4xl"
+      size={modalVersions}
     >
       <ModalOverlay />
       <ModalContent
@@ -39,11 +45,23 @@ export function ModalAddImage({
         color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
         borderRadius="none"
       >
-        <ModalHeader fontSize="4xl">Nova imagem</ModalHeader>
+        <ModalHeader
+          padding={[4, 5, 6, 7, 8]}
+        >
+          <Flex alignItems="center" justifyContent="space-between">
+            <Text fontWeight="bold">Nova imagem</Text>
+            <CloseButton
+              onClick={onClose}
+              borderRadius="0.25rem"
+            />
+          </Flex>
+        </ModalHeader>
 
-        <ModalCloseButton borderRadius="0.25rem" />
-
-        <ModalBody px={60}>
+        <ModalBody
+          paddingTop={0}
+          paddingBottom={[4, 5, 6, 7, 8]}
+          paddingX={[4, 5, 6, 7, 8]}
+        >
           <FormAddImage closeModal={handleCloseModal} />
         </ModalBody>
       </ModalContent>

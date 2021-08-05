@@ -17,6 +17,10 @@ import {
   FormLabel,
   Box,
   useToast,
+  useBreakpointValue,
+  Flex,
+  Text,
+  CloseButton,
 } from '@chakra-ui/react';
 import React from 'react';
 import { RiImageEditFill } from 'react-icons/Ri';
@@ -65,8 +69,9 @@ export function ModalUpdateImage({
 }: ModalUpdateImageProps): JSX.Element {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-  const { colorMode } = useColorMode();
   const initialFocusRef = React.useRef();
+  const { colorMode } = useColorMode();
+  const modalVersions = useBreakpointValue({ base: "xs", sm: "sm", md: "md", lg: "lg", xl: "xl" })
 
   const formValidations = {
     title: {
@@ -170,7 +175,6 @@ export function ModalUpdateImage({
   return (
     <>
       <IconButton
-        size="sm"
         variant="toogleIcon-dark/light"
         borderRadius="0.25rem"
         onClick={onOpen}
@@ -181,8 +185,8 @@ export function ModalUpdateImage({
             role="img"
             aria-label="Ícone de edição de imagem"
             position="absolute"
-            w={6}
-            h={6}
+            w={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.68rem"]}
+            h={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.68rem"]}
           />
         }
       />
@@ -195,7 +199,7 @@ export function ModalUpdateImage({
         onClose={onClose}
         isCentered
         motionPreset="scale"
-        size="md"
+        size={modalVersions}
       >
         <ModalOverlay />
         <ModalContent
@@ -203,13 +207,24 @@ export function ModalUpdateImage({
           color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
           borderRadius="none"
         >
-          <ModalHeader>Adicione novo título ou descrição</ModalHeader>
-          <ModalCloseButton borderRadius="0.25rem" onClick={() => reset({
-            title: image.title,
-            description: image.description
-          })} />
+          <ModalHeader padding={[4, 5, 6, 7, 8]}>
+            <Flex alignItems="center" justifyContent="space-between">
+              <Text fontWeight="bold">Atualização das informações</Text>
+              <CloseButton
+                onClick={() => {
+                  onClose();
+                  reset({
+                    title: image.title,
+                    description: image.description
+                  });
+                }}
+                borderRadius="0.25rem"
+              />
+            </Flex>
+          </ModalHeader>
+
           <ModalBody
-            padding="0"
+            padding={0}
           >
             <Image
               src={image.url}
@@ -222,7 +237,7 @@ export function ModalUpdateImage({
             <Box
               as="form"
               onSubmit={handleSubmit(onSubmit)}
-              padding="1rem 1.5rem"
+              paddingX={[4, 5, 6, 7, 8]}
               id="FormModalUpdateImage"
             >
               <FormControl marginTop="1rem">
@@ -248,7 +263,7 @@ export function ModalUpdateImage({
           </ModalBody>
 
           <ModalFooter
-            padding="1rem 1.5rem 1.5rem"
+            padding={[4, 5, 6, 7, 8]}
           >
             <ButtonGroup isAttached>
               <Button

@@ -8,6 +8,7 @@ import {
   SkeletonText,
   useColorMode,
   VStack,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ModalDeleteImage } from './Modal/DeleteImage';
@@ -30,6 +31,7 @@ interface CardProps {
 export function Card({ data, viewImage }: CardProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const { colorMode } = useColorMode();
+  const buttonGroupSizes = useBreakpointValue({ base: "xs", sm: "xs", md: "sm", lg: "sm", xl: "sm" });
 
   return (
     <Box
@@ -44,7 +46,7 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
             alt={data.title}
             objectFit="cover"
             w="100%"
-            h={48}
+            h={["10.25rem"]}
             onClick={() => viewImage(data.url)}
             onLoad={() => setIsLoading(false)}
             cursor="pointer"
@@ -55,8 +57,8 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
       <Box pt={3} pb={3} px={4}>
         {isLoading ? (
           <>
-            <SkeletonText fontSize="2xl" mt={2} noOfLines={1} />
-            <SkeletonText fontSize="md" mt={7} noOfLines={1} />
+            <SkeletonText fontSize="1.125rem" mt={2} noOfLines={1} />
+            <SkeletonText fontSize="1rem" mt={7} noOfLines={1} />
           </>
         ) : (
           <VStack
@@ -71,15 +73,15 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Heading fontSize="2xl">{data.title}</Heading>
-              <ButtonGroup isAttached>
+              <Heading fontSize="1.125rem" fontWeight="bold">{data.title}</Heading>
+              <ButtonGroup isAttached size={buttonGroupSizes}>
                 <ModalDeleteImage imageId={data.id} />
                 <ModalUpdateImage image={data} />
                 <ButtonFavoriteImage image={data} />
               </ButtonGroup >
             </Box>
             <Box width="inherit">
-              <Text fontSize="md">
+              <Text fontSize="1rem">
                 {data.description}
               </Text>
             </Box>

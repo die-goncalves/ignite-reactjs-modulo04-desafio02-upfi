@@ -12,7 +12,7 @@ export const Loader = forwardRef<HTMLDivElement, LoaderProps>(({ hasNextPage }, 
     <>
       {hasNextPage &&
         <Box
-          marginTop="40px"
+          marginTop={["1rem", "1.125rem", "1.5rem", "2.5rem"]}
           display="flex"
           justifyContent="center"
           alignItems="center"
@@ -20,8 +20,8 @@ export const Loader = forwardRef<HTMLDivElement, LoaderProps>(({ hasNextPage }, 
         >
           <CircularProgress
             isIndeterminate
-            size="3.25rem"
-            thickness="0.75rem"
+            size="2.5rem"
+            thickness="0.5rem"
             color={colorMode === "dark" ? "loading.circular-progress-dark" : "loading.circular-progress-light"}
             trackColor={colorMode === "dark" ? "loading.track-dark" : "loading.track-light"}
           />

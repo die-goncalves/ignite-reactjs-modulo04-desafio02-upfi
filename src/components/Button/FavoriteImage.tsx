@@ -98,7 +98,6 @@ export function ButtonFavoriteImage({
   return (
     <>
       <IconButton
-        size="sm"
         variant="toogleIcon-dark/light"
         borderRadius="0.25rem"
         onClick={() => favoriteImage(image)}
@@ -112,16 +111,16 @@ export function ButtonFavoriteImage({
             aria-label="Favoritar imagem"
             position="absolute"
             color="#FF4142"
-            w="1.44rem"
-            h="1.44rem"
+            w={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.47rem"]}
+            h={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.47rem"]}
           />) : (<Icon
             as={RiHeart3Line}
             role="img"
             aria-label="Desfavoritar imagem"
             position="absolute"
             color="#FF4142"
-            w="1.44rem"
-            h="1.44rem"
+            w={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.47rem"]}
+            h={["1.200325rem", "1.2635rem", "1.33rem", "1.4rem", "1.47rem"]}
           />)
         }
       />

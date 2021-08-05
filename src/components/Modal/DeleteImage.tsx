@@ -1,6 +1,8 @@
 import {
   Button,
   ButtonGroup,
+  CloseButton,
+  Flex,
   Icon,
   IconButton,
   Modal,
@@ -10,6 +12,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
+  useBreakpointValue,
   useColorMode,
   useDisclosure,
   useToast
@@ -50,9 +54,10 @@ interface DeleteImageProps {
 }
 
 export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const initialFocusRef = React.useRef()
-  const toast = useToast()
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const modalVersions = useBreakpointValue({ base: "xs", sm: "sm", md: "md", lg: "lg", xl: "xl" })
+  const initialFocusRef = React.useRef();
+  const toast = useToast();
   const { colorMode } = useColorMode();
 
   const queryClient = useQueryClient();
@@ -109,7 +114,6 @@ export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
   return (
     <>
       <IconButton
-        size="sm"
         variant="toogleIcon-dark/light"
         borderRadius="0.25rem"
         onClick={onOpen}
@@ -120,8 +124,8 @@ export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
             role="img"
             aria-label="Ícone de exclusão"
             position="absolute"
-            w="1.35rem"
-            h="1.35rem"
+            w={["1.15745625rem", "1.218375rem", "1.2825rem", "1.35rem", "1.4175rem"]}
+            h={["1.15745625rem", "1.218375rem", "1.2825rem", "1.35rem", "1.4175rem"]}
           />
         }
       />
@@ -134,6 +138,7 @@ export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
         initialFocusRef={initialFocusRef}
         isOpen={isOpen}
         onClose={onClose}
+        size={modalVersions}
       >
         <ModalOverlay />
         <ModalContent
@@ -141,28 +146,44 @@ export function ModalDeleteImage({ imageId }: DeleteImageProps): JSX.Element {
           color={colorMode === "dark" ? "modal.color-dark" : "modal.color-light"}
           borderRadius="none"
         >
-          <ModalHeader>Confirmação</ModalHeader>
-          <ModalCloseButton borderRadius="0.25rem" />
-          <ModalBody pb={6}>
-            Tem certeza que deseja excluir a imagem?
+          <ModalHeader
+            padding={[4, 5, 6, 7, 8]}
+          >
+            <Flex alignItems="center" justifyContent="space-between">
+              <Text fontWeight="bold">Confirmação</Text>
+              <CloseButton
+                onClick={onClose}
+                borderRadius="0.25rem"
+              />
+            </Flex>
+          </ModalHeader>
+
+          <ModalBody
+            paddingX={[4, 5, 6, 7, 8]}
+            paddingY={0}
+          >
+            <Text fontSize="1rem">
+              Tem certeza que deseja excluir a imagem?
+            </Text>
           </ModalBody>
 
-          <ModalFooter>
+          <ModalFooter padding={[4, 5, 6, 7, 8]}>
             <ButtonGroup isAttached>
               <Button
                 onClick={onClose}
                 ref={initialFocusRef}
                 variant="ghost"
               >
-                Não
+                <Text fontSize="1rem">Não</Text>
               </Button>
               <Button
+                fontSize="1rem"
                 onClick={deleteImage}
                 isLoading={isLoading}
                 loadingText="Excluindo"
                 colorScheme="red"
               >
-                Sim
+                <Text fontSize="inherit">Sim</Text>
               </Button>
             </ButtonGroup>
           </ModalFooter>
